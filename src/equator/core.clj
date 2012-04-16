@@ -33,15 +33,31 @@
       pow (infix-power form))
     form))
 
-(defn naive-simplify [form]
+(defn infix-tree-form [form]
+  (walk/postwalk infix-form form))
+
+(defn third [x]
+  (nth x 2))
+
+(defn eval-if-possible [form]
   (let [simple (try (eval form) (catch Exception e))]
     (if simple simple form)))
 
-(defn simplify [form]
-  (walk/postwalk naive-simplify form))
+(defn calc-partly [form]
+  (let [op (first form)
+        non-numbers (filter (complement number?) (rest form))
+        numbers (filter number? form)
+        result (eval-if-possible `(~op ~@numbers))]
+    (if result
+      (if (empty? non-numbers)
+        result
+        (concat [op] non-numbers [result]))
+      form)))
 
-(defn infix-tree-form [form]
-  (walk/postwalk infix-form form))
+(defn simplify [form]
+  (if (= (first form) '=)
+    (list '= (simplify (second form)) (simplify (third form)))
+    (walk/postwalk #(if (sequential? %) (calc-partly %) %) form)))
 
 (defn pow [x e] (Math/pow x e))
 

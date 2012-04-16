@@ -1,10 +1,6 @@
 # equator
 
-FIXME: write description
-
-## Usage
-
-FIXME: write
+Experimental math project. Too early in development, disregard for now.
 
 ## License
 
