@@ -1,9 +1,6 @@
 (ns equator.infix
   (:require [clojure.walk :as walk]))
 
-(def equation
-  '(= (+ (* 2 (pow x 2)) x 1) 4))
-
 (defn infix= [[op a b]]
   `(~a ~op ~b))
 
