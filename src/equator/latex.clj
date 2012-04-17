@@ -13,6 +13,12 @@
 (defn latex-addition [form]
   (apply str (interpose " + " (drop 1 form))))
 
+(defn latex-multiplication [form]
+  )
+
+(defn latex-fraction [form]
+  (str "\\frac{" (numerator form) "}{" (denominator form) "}"))
+
 (defn latex-power [[_ x e]]
   (if (= 1 (count (str e)))
     (str x "^" e)
@@ -24,18 +30,26 @@
     (str x "_{" s "}")))
 
 (def dispatch-map
-  {equation? latex-equation
+  [ratio? latex-fraction
+   #(not (sequential? %)) identity
+   equation? latex-equation
    addition? latex-addition
+   multiplication? latex-multiplication
+   division? latex-fraction
+   fraction? latex-fraction
    power? latex-power
-   subscript? latex-subscript})
+   subscript? latex-subscript])
 
 (defmacro dispatch []
-  `(cond ~@(mapcat (fn [[k v]] `((~k ~'form) (~v ~'form))) dispatch-map)))
+  `(cond ~@(mapcat (fn [[k v]] `((~k ~'form) (~v ~'form)))
+                   (partition 2 dispatch-map))
+         :else form))
 
 (defn form-to-latex [form]
-  (if (sequential? form)
-    (dispatch)
-    form))
+  (dispatch)
+  #_(let [result (dispatch)]
+      (prn form)
+      result))
 
 (defn to-latex [form]
   (walk/postwalk form-to-latex form))

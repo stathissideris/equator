@@ -18,8 +18,9 @@
   (when (sequential? form) (rest form)))
 
 (defn equation? [form]
-  (or (op= form '=)
-      (op= form 'not=)))
+  (and (sequential? form)
+       (or (op= form '=)
+           (op= form 'not=))))
 
 (defn addition? [form]
   (op= form '+))
@@ -37,10 +38,10 @@
   (op= form '*))
 
 (defn power? [form]
-  (= 'pow (first form)))
+  (op= form 'pow))
 
 (defn sqrt? [form]
-  (= 'sqrt (first form)))
+  (op= form 'sqrt))
 
 (defn subscript? [form]
   (op= form 'sub))
